@@ -63,12 +63,12 @@ def detect_failed_logins():
 if __name__ == "__main__":
     alerts = detect_failed_logins()
     
-    print(f"\n🐕 LogHound - Failed Login Detection")
+    print(f"\n LogHound - Failed Login Detection")
     print(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print(f"Total alerts found: {len(alerts)}\n")
     
     for alert in alerts:
-        print(f"🚨 Severity  : {alert['severity']}")
+        print(f" Severity  : {alert['severity']}")
         print(f"   User      : {alert['user']}")
         print(f"   IP        : {alert['ip']}")
         print(f"   Location  : {alert['location']}")

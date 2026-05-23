@@ -7,7 +7,7 @@ second_to_run = 30
 
 alerts = []
 class OnMyWatch:
-    # Set the directory on watch
+    
     watchDirectory = "test_files/" 
     
     def __init__(self):
@@ -31,7 +31,7 @@ class OnMyWatch:
             self.observer.stop()
             print("Observer Stopped")
     
-        print(f"\n✅ Monitoring finished after {second_to_run} seconds")
+        print(f"\n Monitoring finished after {second_to_run} seconds")
         self.observer.stop()
         self.observer.join()
 
@@ -58,7 +58,7 @@ class Handler(FileSystemEventHandler):
             return None
 
         elif event.event_type == 'created':
-            # Event is created, you can process it now
+            
             alert = {
     "filename": event.src_path,
     "event_type": "created",
@@ -66,7 +66,7 @@ class Handler(FileSystemEventHandler):
     "raw_time" : time.time()
 }
             alerts.append(alert)
-            #print("Watchdog received created event - % s." % event.src_path)
+            
         elif event.event_type == 'modified':
             # Event is modified, you can process it now
             alert = {
@@ -93,7 +93,7 @@ class Handler(FileSystemEventHandler):
             }
 
             
-            #print("Watchdog received modified event - % s." % event.src_path)
+            
             alerts.append(alert)
 
 if __name__ == '__main__':
@@ -102,11 +102,11 @@ if __name__ == '__main__':
 
     for alert in alerts:
         if alert.get('type') == 'RANSOMWARE':
-            print(f"🔴 RANSOMWARE DETECTED!")
+            print(f" RANSOMWARE DETECTED!")
             print(f"   Files affected: {alert['count']}")
             print(f"   Started at: {alert['start_time']}")
         else:
-            print(f"🚨 {alert['event_type'].upper()}")
+            print(f" {alert['event_type'].upper()}")
             print(f"   File: {alert['filename']}")
             print(f"   Time: {alert['timestamp']}\n")
 

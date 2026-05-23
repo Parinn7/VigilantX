@@ -34,12 +34,12 @@ def new_ip_login():
 if __name__ == "__main__":
     alerts = new_ip_login()
     
-    print(f"\n🐕 LogHound - New IP Detection")
+    print(f"\n LogHound - New IP Detection")
     print(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print(f"Total alerts found: {len(alerts)}\n")
     
     for alert in alerts:
-        print(f"🚨 New IP Detected!")
+        print(f" New IP Detected!")
         print(f"   User     : {alert['user']}")
         print(f"   New IP   : {alert['ip']}")
         print(f"   Location : {alert['location']}")

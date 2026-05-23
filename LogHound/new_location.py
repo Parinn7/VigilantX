@@ -32,12 +32,12 @@ def new_location_login():
 if __name__ == "__main__":
     alerts = new_location_login()
     
-    print(f"\n🐕 LogHound - New Location Detection")
+    print(f"\n LogHound - New Location Detection")
     print(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print(f"Total alerts found: {len(alerts)}\n")
     
     for alert in alerts:
-        print(f"🚨 New Location Detected!")
+        print(f" New Location Detected!")
         print(f"   User     : {alert['user']}")
         print(f"   Location : {alert['Location']}")
         print(f"   IP       : {alert['IP']}")
