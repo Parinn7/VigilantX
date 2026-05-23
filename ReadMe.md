@@ -1,4 +1,4 @@
-# VigilantX 🛡️
+# VigilantX 
 **Security Monitoring System — Internship Project**
 *Forensic CyberTec | Security Engineering Intern*
 
@@ -145,6 +145,8 @@ IntegrityX will detect 10+ rapid file changes and trigger a ransomware alert.
 
 **Test email notifications**
 Add a test alert at the bottom of admin_alert.py:
+
+```bash
 if __name__ == "__main__":
     test_alert = {
         "type": "BRUTE_FORCE",
@@ -156,7 +158,7 @@ if __name__ == "__main__":
         "time": "2026-05-20 17:04:13"
     }
     send_admin_alert(test_alert) 
-    
+```
 
 and run:
 ```bash
@@ -165,5 +167,9 @@ python3 Notifications/admin_alert.py
 
 do similar for send_client_alert(test_alert)
 ---
+
+## Future Improvements
+- Multi-client support via clients.json config file
+- Each client gets their own watched folder and log file
 
 *Built by Parin*
