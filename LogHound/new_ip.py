@@ -19,7 +19,7 @@ def new_ip_login():
             
             if ip not in login_ips[user]:
                 alert = {
-                "type": "New_IP",
+                "type": "NEW_IP",
                 "user": user,
                 "ip": ip,
                 "time": parts[0].strip(),

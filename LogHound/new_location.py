@@ -18,7 +18,7 @@ def new_location_login():
             
             if loc not in location_logins[user]:
                 alert = {
-                    "type" : "new_loc",
+                    "type": "NEW_LOCATION",
                     "user" : user,
                     "Location" : loc,
                     "time" : parts[0].strip(),

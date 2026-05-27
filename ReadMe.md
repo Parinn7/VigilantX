@@ -1,98 +1,193 @@
-# VigilantX 
-**Security Monitoring System — Internship Project**
-*Forensic CyberTec | Security Engineering Intern*
+# VigilantX
+
+Real-time security monitoring system for detecting suspicious login activity and file integrity threats.
+
+Built during Summer 2026 as a cybersecurity and systems monitoring project.
 
 ---
 
-## About
-VigilantX is a two-layer security monitoring system I built during my internship at Forensic CyberTec. It monitors login activity and file integrity in real-time, sending email alerts to both the security team and clients when suspicious activity is detected.
+## Features
 
----
+### LogHound — Login Activity Monitoring
 
-## What it does
+Detects suspicious authentication activity from login logs:
 
-**LogHound** — monitors login logs and detects:
-- Brute force attacks (10+ failed logins within 5 minutes)
+- Brute force attacks  
+  *(10+ failed login attempts within 5 minutes)*
 - Logins from new IP addresses
 - Logins from new geographic locations
 
-**IntegrityX** — monitors a folder and detects:
-- Any file created, modified, deleted or renamed
-- Ransomware-like behavior (10+ files changing rapidly)
+### IntegrityX — File Integrity Monitoring
 
-**Notifications** — sends email alerts:
-- Admin gets full technical details
-- Client gets a simple plain English summary
+Monitors files and directories in real time:
+
+- File creation detection
+- File modification detection
+- File deletion detection
+- File rename detection
+- Ransomware-like behavior detection  
+  *(10+ rapid file changes)*
+
+### Notifications
+
+Automatically sends email alerts:
+
+- **Admin alerts** → detailed technical information
+- **Client alerts** → simplified plain-English summaries
+
+---
+
+## Tech Stack
+
+- Python
+- Watchdog
+- Pandas
+- Flask
+- SMTP Email Automation
+- python-dotenv
+
+---
+
+## Screenshots
+
+### Brute Force Detection
+
+<img width="900" alt="Brute Force Detection" src="screenshots/bruteforce.png">
+
+### New IP / Location Detection
+
+<img width="900" alt="New Login Detection" src="screenshots/new_login.png">
+
+### File Integrity Monitoring
+
+<img width="900" alt="File Monitoring" src="screenshots/file_monitor.png">
+
+### Ransomware Detection
+
+<img width="900" alt="Ransomware Detection" src="screenshots/ransomware.png">
+
+### Email Alert Example
+
+<img width="900" alt="Email Alert" src="screenshots/email_alert.png">
 
 ---
 
 ## Project Structure
-```
+
+```text
 VigilantX/
 ├── LogHound/
-│   ├── failed_logins.py      → brute force detection
-│   ├── new_ip.py             → new IP login detection
-│   ├── new_location.py       → new location login detection
-│   └── log_analyzer.py       → runs all 3 detectors together
+│   ├── failed_logins.py
+│   ├── new_ip.py
+│   ├── new_location.py
+│   └── log_analyzer.py
+│
 ├── IntegrityX/
-│   └── file_monitor.py       → file change + ransomware detection
+│   └── file_monitor.py
+│
 ├── Notifications/
-│   ├── admin_alert.py        → technical email alerts to admin
-│   └── client_alert.py       → simple email alerts to client
+│   ├── admin_alert.py
+│   └── client_alert.py
+│
 ├── logs/
-│   ├── auth.log              → login activity logs
-│   └── generate_logs.py      → fake log generator for testing
-├── test_files/               → folder watched by IntegrityX
-└── .env                      → credentials (never push this!)
+│   ├── auth.log
+│   └── generate_logs.py
+│
+├── screenshots/
+│   ├── bruteforce.png
+│   ├── new_login.png
+│   ├── file_monitor.png
+│   ├── ransomware.png
+│   └── email_alert.png
+│
+├── test_files/
+│
+└── .env
+```
+
+---
+
+## How It Works
+
+### Login Monitoring Flow
+
+```text
+Login Logs → LogHound → Threat Detection → Email Alerts
+```
+
+### File Monitoring Flow
+
+```text
+File Activity → IntegrityX → Suspicious Behavior Detection → Email Alerts
 ```
 
 ---
 
 ## Setup
 
-**1 — Clone and enter the project**
+### 1. Clone the repository
+
 ```bash
-git clone https://github.com/yourusername/VigilantX.git
+git clone https://github.com/Parinn7/VigilantX.git
 cd VigilantX
 ```
 
-**2 — Create and activate virtual environment**
+### 2. Create a virtual environment
+
 ```bash
 python3 -m venv .venv
+```
+
+### 3. Activate the virtual environment
+
+#### macOS / Linux
+
+```bash
 source .venv/bin/activate
 ```
 
-**3 — Install dependencies**
+#### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### 4. Install dependencies
+
 ```bash
 pip install watchdog flask pandas python-dotenv
 ```
 
-**4 — Create a .env file in the root folder**
-```
+### 5. Create a `.env` file
+
+```env
 SENDER_EMAIL=yourgmail@gmail.com
-SENDER_PASSWORD=xxxxxxxxxxxxxxxx
+SENDER_PASSWORD=your_app_password
 ADMIN_EMAIL=admin@example.com
 CLIENT_EMAIL=client@example.com
 ```
 
-> SENDER_PASSWORD is a Gmail App Password, not your regular password.
-> Get one here: Google Account → Security → 2-Step Verification → App Passwords
+> Use a Gmail App Password instead of your normal Gmail password.
 
 ---
 
-## Running
+## Running the Project
+
+### Generate test logs
 
 ```bash
-# Activate venv every time you open a new terminal
-source .venv/bin/activate
-
-# Generate fake logs for testing
 python3 logs/generate_logs.py
+```
 
-# Run LogHound only
+### Run login monitoring
+
+```bash
 python3 LogHound/log_analyzer.py
+```
 
-# Run IntegrityX only
+### Run file integrity monitoring
+
+```bash
 python3 IntegrityX/file_monitor.py
 ```
 
@@ -100,76 +195,69 @@ python3 IntegrityX/file_monitor.py
 
 ## Testing
 
-**Generate fake logs**
-```bash
-python3 logs/generate_logs.py
-```
-This creates fake login logs with 3 scenarios already planted:
-- 15 failed logins from Russia (brute force)
-- New IP login from Brazil
-- New location login from China
+### Test File Change Detection
 
-**Run LogHound and see all 3 detections**
-```bash
-python3 LogHound/log_analyzer.py
-```
-
-**Test single file change detection**
-Open two terminals. In terminal 1 start IntegrityX:
-```bash
-python3 IntegrityX/file_monitor.py
-```
-In terminal 2 make a file change:
 ```bash
 echo "test" >> test_files/document1.txt
 ```
 
-**Test file creation detection**
-In terminal 2 while IntegrityX is running:
+### Test File Creation Detection
+
 ```bash
 touch test_files/newfile.txt
 ```
 
-**Test file deletion detection**
-In terminal 2 while IntegrityX is running:
+### Test File Deletion Detection
+
 ```bash
 rm test_files/document2.txt
 ```
 
-**Test ransomware detection**
-In terminal 2 while IntegrityX is running:
-```bash
-for i in {1..15}; do touch test_files/ransomware_test_$i.txt; done
-```
-IntegrityX will detect 10+ rapid file changes and trigger a ransomware alert.
-
-**Test email notifications**
-Add a test alert at the bottom of admin_alert.py:
+### Test Ransomware Detection
 
 ```bash
-if __name__ == "__main__":
-    test_alert = {
-        "type": "BRUTE_FORCE",
-        "user": "admin",
-        "ip": "45.33.32.156",
-        "location": "Russia",
-        "count": 15,
-        "severity": "HIGH",
-        "time": "2026-05-20 17:04:13"
-    }
-    send_admin_alert(test_alert) 
+for i in {1..15}; do
+    touch test_files/ransomware_test_$i.txt
+done
 ```
 
-and run:
-```bash
-python3 Notifications/admin_alert.py
-```
+IntegrityX will trigger a ransomware alert after detecting rapid file activity.
 
-do similar for send_client_alert(test_alert)
+---
+
+## Example Threat Scenarios
+
+The generated test logs include:
+
+- 15 failed login attempts from Russia
+- New IP login from Brazil
+- New geographic location login from China
+
 ---
 
 ## Future Improvements
-- Multi-client support via clients.json config file
-- Each client gets their own watched folder and log file
 
-*Built by Parin*
+- Multi-client support
+- Dashboard for live monitoring
+- Database-backed alert storage
+- SIEM integration
+- Docker deployment
+- Web-based alert management panel
+
+---
+
+## Security Note
+
+Never commit your `.env` file or credentials to GitHub.
+
+Add this to `.gitignore`:
+
+```gitignore
+.env
+```
+
+---
+
+## Author
+
+Built by **Parin Patel** as a Summer 2026 cybersecurity project.

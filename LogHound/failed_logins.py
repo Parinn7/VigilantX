@@ -45,7 +45,7 @@ def detect_failed_logins():
                 if user not in alert_set or time - alert_set[user] > ALERT_COOL_DOWN:
                     alert_set[user] = time
                     alert = {
-                        "type": "BruteForce",
+                        "type": "BRUTE_FORCE",
                         "user": user,
                         "ip": ip,
                         "location": loc,

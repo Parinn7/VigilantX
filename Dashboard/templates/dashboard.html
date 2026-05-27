@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VigilantX — Security Operations Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #00ff41;
+            --green-dim: #00cc33;
+            --green-dark: #003311;
+            --red: #ff2244;
+            --orange: #ff8800;
+            --yellow: #ffcc00;
+            --bg: #020c02;
+            --bg2: #040f04;
+            --bg3: #071407;
+            --border: #00ff4122;
+            --border-bright: #00ff4155;
+            --text: #00ff41;
+            --text-dim: #00aa2a;
+            --text-muted: #005511;
+            --mono: 'Share Tech Mono', monospace;
+            --sans: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,255,65,0.015) 2px,
+                rgba(0,255,65,0.015) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Grid background */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ── HEADER ── */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border: 1px solid var(--border-bright);
+            background: var(--bg2);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--green);
+            box-shadow: 0 0 20px var(--green);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 44px; height: 44px;
+            border: 2px solid var(--green);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 15px var(--green), inset 0 0 15px rgba(0,255,65,0.1);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px var(--green), inset 0 0 15px rgba(0,255,65,0.1); }
+            50% { box-shadow: 0 0 30px var(--green), inset 0 0 30px rgba(0,255,65,0.2); }
+        }
+
+        .logo-text h1 {
+            font-family: var(--sans);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--green);
+            text-shadow: 0 0 20px var(--green);
+        }
+
+        .logo-text p {
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .clock {
+            font-size: 13px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        /* ── SUMMARY CARDS ── */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--border-bright);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background: var(--card-color, var(--green));
+            box-shadow: 0 0 10px var(--card-color, var(--green));
+        }
+
+        .card-label {
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-family: var(--sans);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--card-color, var(--green));
+            text-shadow: 0 0 20px var(--card-color, var(--green));
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .card-brute   { --card-color: var(--red); }
+        .card-ip      { --card-color: var(--orange); }
+        .card-loc     { --card-color: var(--yellow); }
+        .card-file    { --card-color: #00ccff; }
+        .card-total   { --card-color: var(--green); }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 10px 24px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            transition: all 0.2s;
+            background: transparent;
+            font-family: var(--mono);
+        }
+
+        .tab:hover { color: var(--text-dim); }
+
+        .tab.active {
+            color: var(--green);
+            border-color: var(--border-bright);
+            background: var(--bg2);
+            border-bottom: 1px solid var(--bg2);
+            margin-bottom: -1px;
+        }
+
+        /* ── PANEL ── */
+        .panel {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .panel.active { display: block; }
+
+        /* ── TABLE ── */
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead tr {
+            border-bottom: 1px solid var(--border-bright);
+        }
+
+        th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        tr:hover td { background: rgba(0,255,65,0.03); }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 9px;
+            letter-spacing: 2px;
+            border: 1px solid;
+        }
+
+        .badge-HIGH     { color: var(--red);    border-color: var(--red);    background: rgba(255,34,68,0.1); }
+        .badge-MEDIUM   { color: var(--orange); border-color: var(--orange); background: rgba(255,136,0,0.1); }
+        .badge-CRITICAL { color: #ff00ff;       border-color: #ff00ff;       background: rgba(255,0,255,0.1); }
+        .badge-INFO     { color: #00ccff;       border-color: #00ccff;       background: rgba(0,204,255,0.1); }
+
+        .type-tag {
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .type-BRUTE_FORCE  { color: var(--red); }
+        .type-NEW_IP       { color: var(--orange); }
+        .type-NEW_LOCATION { color: var(--yellow); }
+        .type-CREATED      { color: #00ccff; }
+        .type-MODIFIED     { color: var(--orange); }
+        .type-DELETED      { color: var(--red); }
+        .type-RENAME       { color: var(--yellow); }
+        .type-RANSOMWARE   { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+
+        /* ── CHART ── */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .chart-box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 16px;
+        }
+
+        .chart-title {
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bar-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            width: 120px;
+            flex-shrink: 0;
+            letter-spacing: 1px;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 16px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 2px; height: 100%;
+            background: white;
+            opacity: 0.5;
+        }
+
+        .bar-count {
+            font-size: 11px;
+            color: var(--text-dim);
+            width: 24px;
+            text-align: right;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        /* ── REFRESH BAR ── */
+        .refresh-bar {
+            height: 2px;
+            background: var(--border);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refresh-progress {
+            height: 100%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            width: 0%;
+            animation: progress 30s linear infinite;
+        }
+
+        @keyframes progress {
+            from { width: 0%; }
+            to   { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🛡</div>
+            <div class="logo-text">
+                <h1>VIGILANTX</h1>
+                <p>SECURITY OPERATIONS CENTER</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                SYSTEMS ONLINE
+            </div>
+            <div class="clock" id="clock">--:--:--</div>
+        </div>
+    </header>
+
+    <!-- REFRESH BAR -->
+    <div class="refresh-bar">
+        <div class="refresh-progress" id="refresh-bar"></div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="cards">
+        <div class="card card-brute">
+            <div class="card-label">LOGHOUND</div>
+            <div class="card-value" id="c-brute">0</div>
+            <div class="card-title">BRUTE FORCE</div>
+        </div>
+        <div class="card card-ip">
+            <div class="card-label">LOGHOUND</div>
+            <div class="card-value" id="c-ip">0</div>
+            <div class="card-title">NEW IP</div>
+        </div>
+        <div class="card card-loc">
+            <div class="card-label">LOGHOUND</div>
+            <div class="card-value" id="c-loc">0</div>
+            <div class="card-title">NEW LOCATION</div>
+        </div>
+        <div class="card card-file">
+            <div class="card-label">INTEGRITYX</div>
+            <div class="card-value" id="c-file">0</div>
+            <div class="card-title">FILE EVENTS</div>
+        </div>
+        <div class="card card-total">
+            <div class="card-label">TOTAL</div>
+            <div class="card-value" id="c-total">0</div>
+            <div class="card-title">ALL ALERTS</div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+        <div class="chart-box">
+            <div class="chart-title">ALERT DISTRIBUTION — LOGHOUND</div>
+            <div class="bar-chart" id="loghound-chart"></div>
+        </div>
+        <div class="chart-box">
+            <div class="chart-title">ALERT DISTRIBUTION — INTEGRITYX</div>
+            <div class="bar-chart" id="integrityx-chart"></div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('all')">ALL ALERTS</div>
+        <div class="tab" onclick="switchTab('loghound')">LOGHOUND</div>
+        <div class="tab" onclick="switchTab('integrityx')">INTEGRITYX</div>
+    </div>
+
+    <!-- PANELS -->
+    <div class="panel active" id="tab-all">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>TYPE</th>
+                        <th>USER</th>
+                        <th>DETAILS</th>
+                        <th>TIME</th>
+                        <th>SEVERITY</th>
+                    </tr>
+                </thead>
+                <tbody id="table-all"><tr><td colspan="5" class="empty">LOADING...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel" id="tab-loghound">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>TYPE</th>
+                        <th>USER</th>
+                        <th>IP</th>
+                        <th>LOCATION</th>
+                        <th>TIME</th>
+                        <th>SEVERITY</th>
+                    </tr>
+                </thead>
+                <tbody id="table-loghound"><tr><td colspan="6" class="empty">LOADING...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel" id="tab-integrityx">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>TYPE</th>
+                        <th>FILE</th>
+                        <th>TIME</th>
+                    </tr>
+                </thead>
+                <tbody id="table-integrityx"><tr><td colspan="3" class="empty">LOADING...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>VIGILANTX v1.0 — FORENSIC CYBERTECH — AUTO REFRESH 30S</footer>
+</div>
+
+<script>
+    const LOGHOUND_TYPES   = ['BRUTE_FORCE','NEW_IP','NEW_LOCATION'];
+    const INTEGRITYX_TYPES = ['CREATED','MODIFIED','DELETED','RENAME','RANSOMWARE'];
+
+    // Clock
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent =
+            now.toTimeString().slice(0,8);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Tab switching
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    // Bar chart builder
+    function buildBar(label, count, max, color) {
+        const pct = max > 0 ? (count / max * 100) : 0;
+        return `
+        <div class="bar-row">
+            <div class="bar-label">${label}</div>
+            <div class="bar-track">
+                <div class="bar-fill" style="width:${pct}%;background:${color};box-shadow:0 0 8px ${color}"></div>
+            </div>
+            <div class="bar-count">${count}</div>
+        </div>`;
+    }
+
+    // Fetch and render
+    function fetchAlerts() {
+        fetch('/alerts')
+            .then(r => r.json())
+            .then(alerts => {
+                const brute = alerts.filter(a => a.type === 'BRUTE_FORCE').length;
+                const ip    = alerts.filter(a => a.type === 'NEW_IP').length;
+                const loc   = alerts.filter(a => a.type === 'NEW_LOCATION').length;
+                const files = alerts.filter(a => INTEGRITYX_TYPES.includes(a.type)).length;
+
+                document.getElementById('c-brute').textContent = brute;
+                document.getElementById('c-ip').textContent    = ip;
+                document.getElementById('c-loc').textContent   = loc;
+                document.getElementById('c-file').textContent  = files;
+                document.getElementById('c-total').textContent = alerts.length;
+
+                // Charts
+                const lMax = Math.max(brute, ip, loc, 1);
+                document.getElementById('loghound-chart').innerHTML =
+                    buildBar('BRUTE FORCE',   brute, lMax, 'var(--red)') +
+                    buildBar('NEW IP',         ip,    lMax, 'var(--orange)') +
+                    buildBar('NEW LOCATION',   loc,   lMax, 'var(--yellow)');
+
+                const created  = alerts.filter(a => a.type === 'CREATED').length;
+                const modified = alerts.filter(a => a.type === 'MODIFIED').length;
+                const deleted  = alerts.filter(a => a.type === 'DELETED').length;
+                const renamed  = alerts.filter(a => a.type === 'RENAME').length;
+                const ransom   = alerts.filter(a => a.type === 'RANSOMWARE').length;
+                const iMax = Math.max(created, modified, deleted, renamed, ransom, 1);
+                document.getElementById('integrityx-chart').innerHTML =
+                    buildBar('CREATED',   created,  iMax, '#00ccff') +
+                    buildBar('MODIFIED',  modified, iMax, 'var(--orange)') +
+                    buildBar('DELETED',   deleted,  iMax, 'var(--red)') +
+                    buildBar('RENAMED',   renamed,  iMax, 'var(--yellow)') +
+                    buildBar('RANSOMWARE',ransom,   iMax, '#ff00ff');
+
+                // All alerts table
+                if (alerts.length === 0) {
+                    document.getElementById('table-all').innerHTML =
+                        '<tr><td colspan="5" class="empty">NO ALERTS DETECTED</td></tr>';
+                } else {
+                    document.getElementById('table-all').innerHTML = alerts.map(a => {
+                        const details  = a.ip || a.Location || a.location || a.filename || '-';
+                        const severity = a.severity || 'INFO';
+                        const time     = a.time || a.timestamp || '-';
+                        const user     = a.user || '-';
+                        return `<tr>
+                            <td><span class="type-tag type-${a.type}">${a.type}</span></td>
+                            <td>${user}</td>
+                            <td>${details}</td>
+                            <td>${time}</td>
+                            <td><span class="badge badge-${severity}">${severity}</span></td>
+                        </tr>`;
+                    }).join('');
+                }
+
+                // LogHound table
+                const lAlerts = alerts.filter(a => LOGHOUND_TYPES.includes(a.type));
+                document.getElementById('table-loghound').innerHTML = lAlerts.length === 0
+                    ? '<tr><td colspan="6" class="empty">NO LOGHOUND ALERTS</td></tr>'
+                    : lAlerts.map(a => `<tr>
+                        <td><span class="type-tag type-${a.type}">${a.type}</span></td>
+                        <td>${a.user || '-'}</td>
+                        <td>${a.ip || '-'}</td>
+                        <td>${a.location || a.Location || '-'}</td>
+                        <td>${a.time || '-'}</td>
+                        <td><span class="badge badge-${a.severity || 'INFO'}">${a.severity || 'INFO'}</span></td>
+                    </tr>`).join('');
+
+                // IntegrityX table
+                const iAlerts = alerts.filter(a => INTEGRITYX_TYPES.includes(a.type));
+                document.getElementById('table-integrityx').innerHTML = iAlerts.length === 0
+                    ? '<tr><td colspan="3" class="empty">NO INTEGRITYX ALERTS</td></tr>'
+                    : iAlerts.map(a => `<tr>
+                        <td><span class="type-tag type-${a.type}">${a.type}</span></td>
+                        <td>${a.filename || '-'}</td>
+                        <td>${a.timestamp || '-'}</td>
+                    </tr>`).join('');
+
+                // Reset refresh bar animation
+                const bar = document.getElementById('refresh-bar');
+                bar.style.animation = 'none';
+                bar.offsetHeight;
+                bar.style.animation = 'progress 30s linear infinite';
+            });
+    }
+
+    fetchAlerts();
+    setInterval(fetchAlerts, 30000);
+</script>
+</body>
+</html> 
