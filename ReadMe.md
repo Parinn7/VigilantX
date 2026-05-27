@@ -66,9 +66,13 @@ Automatically sends email alerts:
 
 <img width="900" alt="Ransomware Detection" src="screenshots/ransomware.png">
 
-### Email Alert Example
+### Email Alert to Admin Example
 
-<img width="900" alt="Email Alert" src="screenshots/email_alert.png">
+<img width="900" alt="Email Alert" src="screenshots/email_alert1.png">
+
+### Email Alert to Client Example
+
+<img width="900" alt="Email Alert" src="screenshots/email_alert2.png">
 
 ---
 
